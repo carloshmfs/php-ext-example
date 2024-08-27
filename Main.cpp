@@ -1,13 +1,6 @@
 #include <phpcpp.h>
 
-#include <iostream>
-
-Php::Value myFirstFunction()
-{
-    Php::out << "Hello World" << std::endl;
-
-    return true;
-}
+#include "MyFirstClass.h"
 
 /**
  *  tell the compiler that the get_module is a pure C function
@@ -28,7 +21,15 @@ extern "C" {
         static Php::Extension extension("hello-world", "1.0");
 
         // @todo    add your own functions, classes, namespaces to the extension
-        extension.add<myFirstFunction>("caralho");
+        Php::Class<MyFirstClass> myFirstClass("MyFirstClass");
+
+        myFirstClass.method<&MyFirstClass::setValue>("setValue", {
+            Php::ByVal("value", Php::Type::Numeric)
+        });
+        myFirstClass.method<&MyFirstClass::power>("power");
+        myFirstClass.method<&MyFirstClass::value>("value");
+
+        extension.add(std::move(myFirstClass));
 
         // return the extension
         return extension;
